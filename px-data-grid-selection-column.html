@@ -95,7 +95,7 @@ limitations under the License.
           },
 
           /**
-           * When true, all the items are selected.
+           * When true, all the items are selected (except those that are disabled).
            */
           selectAll: {
             type: Boolean,
@@ -278,7 +278,9 @@ limitations under the License.
         }
 
         if (selectAll && this._grid._pxDataGrid) {
-          this._grid.selectedItems = this._grid._pxDataGrid._getAllLocalItems();
+          const allItems = this._grid._pxDataGrid._getAllLocalItems();
+          const selectableItems = allItems.filter(item => !this._isCheckboxDisabled(item));
+          this._grid.selectedItems = selectableItems.slice(0);
         } else {
           this._grid.selectedItems = [];
         }
@@ -320,10 +322,11 @@ limitations under the License.
         this._selectAllChangeLock = true;
         const allItems = this._grid._pxDataGrid._getAllLocalItems();
         if (Array.isArray(allItems)) {
+          const selectableItems = allItems.filter(item => !this._isCheckboxDisabled(item));
           if (!this._grid.selectedItems.length) {
             this.selectAll = false;
             this._indeterminate = false;
-          } else if (this._arrayContains(this._grid.selectedItems, allItems)) {
+          } else if (this._arrayContains(this._grid.selectedItems, selectableItems)) {
             this.selectAll = true;
             this._indeterminate = false;
           } else {
