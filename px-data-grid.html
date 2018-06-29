@@ -115,6 +115,7 @@ limitations under the License.
       <template is="dom-if" if="[[_isSelectable(selectionMode)]]" restamp>
         <px-data-grid-selection-column
           frozen
+          auto-select
           hidden="[[hideSelectionColumn]]"
           multi-select="[[_isMultiSelect(selectionMode)]]"
           tree-grid="[[_groupByColumn]]"
@@ -1228,7 +1229,7 @@ limitations under the License.
               value: function() {
                 return {
                   func: function(row) {
-                    return row.first !== 'Elizabeth';
+                    return row.first === 'Elizabeth';
                   }
                 };
               }

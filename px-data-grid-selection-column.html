@@ -51,7 +51,7 @@ limitations under the License.
     <template id="defaultBodyTemplate">
       <template is="dom-if" if="[[!_isGroupItem(item)]]">
         <template is="dom-if" if="[[multiSelect]]">
-          <vaadin-checkbox aria-label="Select Row" checked="{{selected}}" disabled="[[!_isCheckboxDisabled(item)]]">
+          <vaadin-checkbox aria-label="Select Row" checked="{{selected}}" disabled="[[_isCheckboxDisabled(item)]]">
           </vaadin-checkbox>
         </template>
         <template is="dom-if" if="[[!multiSelect]]">
@@ -309,7 +309,7 @@ limitations under the License.
         const activeItem = e.detail.value;
         if (this.autoSelect) {
           const item = activeItem || this._previousActiveItem;
-          if (item && !item.hasChildren) {
+          if (item && !item.hasChildren && !this._isCheckboxDisabled(item)) {
             this._grid._toggleItem(item);
           }
         }
@@ -356,20 +356,6 @@ limitations under the License.
       _isCheckboxDisabled(row) {
         return this.customDisableCheckboxFunction ? this.customDisableCheckboxFunction.func(row) : false;
       }
-
-      // TODO will need to get the rows to do something like this
-      /*
-      _disableCheckAll(viewingRows) {
-        var isAnyRowSelectable = false;
-        for (let i = 0; i < viewingRows.length; i++) {
-          if (!this.isCheckboxDisabled(viewingRows[i])) {
-            isAnyRowSelectable = true;
-            break;
-          }
-        }
-        return !isAnyRowSelectable;
-      }
-      */
     }
 
     customElements.define(DataGridSelectionColumnElement.is, DataGridSelectionColumnElement);
