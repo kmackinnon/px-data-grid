@@ -44,14 +44,14 @@ limitations under the License.
           indeterminate="[[_indeterminate]]"
           count="[[_selectionCount]]"
           allow-sort-by-selection="[[allowSortBySelection]]"
-          check-listener="[[_boundedSelectAllCheckListener]]"
-        ></px-data-grid-select-all>
+          check-listener="[[_boundedSelectAllCheckListener]]">
+        </px-data-grid-select-all>
       </template>
     </template>
     <template id="defaultBodyTemplate">
       <template is="dom-if" if="[[!_isGroupItem(item)]]">
         <template is="dom-if" if="[[multiSelect]]">
-          <vaadin-checkbox aria-label="Select Row" checked="{{selected}}">
+          <vaadin-checkbox aria-label="Select Row" checked="{{selected}}" disabled="[[!_isCheckboxDisabled(item)]]">
           </vaadin-checkbox>
         </template>
         <template is="dom-if" if="[[!multiSelect]]">
@@ -176,6 +176,11 @@ limitations under the License.
             type: Number,
             value: 0
           },
+
+          customDisableCheckboxFunction: {
+            type: Object,
+            value: undefined
+          }
         };
       }
 
@@ -347,6 +352,24 @@ limitations under the License.
           this.width = '90px';
         }
       }
+
+      _isCheckboxDisabled(row) {
+        return this.customDisableCheckboxFunction ? this.customDisableCheckboxFunction.func(row) : false;
+      }
+
+      // TODO will need to get the rows to do something like this
+      /*
+      _disableCheckAll(viewingRows) {
+        var isAnyRowSelectable = false;
+        for (let i = 0; i < viewingRows.length; i++) {
+          if (!this.isCheckboxDisabled(viewingRows[i])) {
+            isAnyRowSelectable = true;
+            break;
+          }
+        }
+        return !isAnyRowSelectable;
+      }
+      */
     }
 
     customElements.define(DataGridSelectionColumnElement.is, DataGridSelectionColumnElement);

@@ -26,7 +26,9 @@ limitations under the License.
       aria-label="Select All"
       on-checked-changed="_onSelectAllCheckedChanged"
       checked="[[checked]]"
-      indeterminate="[[indeterminate]]"></vaadin-checkbox>
+      indeterminate="[[indeterminate]]"
+      disabled="[[disabled]]">
+    </vaadin-checkbox>
     <template is="dom-if" if="[[allowSortBySelection]]">
       <px-data-grid-sorter path="--selection--">
         ([[count]])
@@ -88,6 +90,11 @@ limitations under the License.
 
             checkListener: {
               type: Function
+            },
+
+            disabled: {
+              type: Object,
+              value: false
             }
           };
         }
