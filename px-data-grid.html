@@ -119,7 +119,8 @@ limitations under the License.
           hidden="[[hideSelectionColumn]]"
           multi-select="[[_isMultiSelect(selectionMode)]]"
           tree-grid="[[_groupByColumn]]"
-          allow-sort-by-selection="[[allowSortBySelection]]">
+          allow-sort-by-selection="[[allowSortBySelection]]"
+          custom-disable-checkbox-function="[[_customDisableCheckboxFunction]]">
         </px-data-grid-selection-column>
       </template>
 
@@ -1221,7 +1222,18 @@ limitations under the License.
 
             _autoFilterValue: {
               type: String
-            }
+            },
+
+            _customDisableCheckboxFunction: {
+              type: Object,
+              value: function() {
+                return {
+                  func: function(row) {
+                    return row.first === 'Elizabeth';
+                  }
+                };
+              }
+            },
           };
         }
 

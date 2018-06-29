@@ -44,14 +44,14 @@ limitations under the License.
           indeterminate="[[_indeterminate]]"
           count="[[_selectionCount]]"
           allow-sort-by-selection="[[allowSortBySelection]]"
-          check-listener="[[_boundedSelectAllCheckListener]]"
-        ></px-data-grid-select-all>
+          check-listener="[[_boundedSelectAllCheckListener]]">
+        </px-data-grid-select-all>
       </template>
     </template>
     <template id="defaultBodyTemplate">
       <template is="dom-if" if="[[!_isGroupItem(item)]]">
         <template is="dom-if" if="[[multiSelect]]">
-          <vaadin-checkbox aria-label="Select Row" checked="{{selected}}">
+          <vaadin-checkbox aria-label="Select Row" checked="{{selected}}" disabled="[[_isCheckboxDisabled(item)]]">
           </vaadin-checkbox>
         </template>
         <template is="dom-if" if="[[!multiSelect]]">
@@ -95,7 +95,7 @@ limitations under the License.
           },
 
           /**
-           * When true, all the items are selected.
+           * When true, all the items are selected (except those that are disabled).
            */
           selectAll: {
             type: Boolean,
@@ -176,6 +176,11 @@ limitations under the License.
             type: Number,
             value: 0
           },
+
+          customDisableCheckboxFunction: {
+            type: Object,
+            value: undefined
+          }
         };
       }
 
@@ -273,7 +278,9 @@ limitations under the License.
         }
 
         if (selectAll && this._grid._pxDataGrid) {
-          this._grid.selectedItems = this._grid._pxDataGrid._getAllLocalItems();
+          const allItems = this._grid._pxDataGrid._getAllLocalItems();
+          const selectableItems = allItems.filter(item => !this._isCheckboxDisabled(item));
+          this._grid.selectedItems = selectableItems.slice(0);
         } else {
           this._grid.selectedItems = [];
         }
@@ -304,7 +311,7 @@ limitations under the License.
         const activeItem = e.detail.value;
         if (this.autoSelect) {
           const item = activeItem || this._previousActiveItem;
-          if (item && !item.hasChildren) {
+          if (item && !item.hasChildren && !this._isCheckboxDisabled(item)) {
             this._grid._toggleItem(item);
           }
         }
@@ -315,10 +322,11 @@ limitations under the License.
         this._selectAllChangeLock = true;
         const allItems = this._grid._pxDataGrid._getAllLocalItems();
         if (Array.isArray(allItems)) {
+          const selectableItems = allItems.filter(item => !this._isCheckboxDisabled(item));
           if (!this._grid.selectedItems.length) {
             this.selectAll = false;
             this._indeterminate = false;
-          } else if (this._arrayContains(this._grid.selectedItems, allItems)) {
+          } else if (this._arrayContains(this._grid.selectedItems, selectableItems)) {
             this.selectAll = true;
             this._indeterminate = false;
           } else {
@@ -346,6 +354,10 @@ limitations under the License.
         } else {
           this.width = '90px';
         }
+      }
+
+      _isCheckboxDisabled(row) {
+        return this.customDisableCheckboxFunction ? this.customDisableCheckboxFunction.func(row) : false;
       }
     }
 
